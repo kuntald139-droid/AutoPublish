@@ -1,0 +1,21 @@
+{
+  "name": "autopublish",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/genai": "^2.11.0",
+    "axios": "^1.18.1",
+    "cloudinary": "^2.10.0",
+    "dotenv": "^17.4.2",
+    "jimp": "^1.6.1",
+    "nodemon": "^3.1.14"
+  }
+}
