@@ -3,7 +3,7 @@ name: Instagram Post automation
 on:
   schedule:
     # Runs everyday at 9:00 AM UTC (5:30 AM IST). You can adjust this cron schedule.
-    - cron: '5 * * * *'
+    - cron: '30 03 * * *'
   workflow_dispatch: # This allows you to manually run the script from the GitHub UI at any time
 
 jobs:
