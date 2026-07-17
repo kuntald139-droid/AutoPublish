@@ -128,8 +128,14 @@ const buffer = await image.getBuffer('image/png'); // Simple, clean string MIME 
 
     console.log('🎉 Successfully published text-on-image post to Instagram!');
 
-  } catch (error) {
-    console.error('❌ An error occurred in the pipeline:', error.message);
+  }  catch (error) {
+    console.error('❌ An error occurred in the pipeline:');
+    if (error.response && error.response.data) {
+      // This prints the exact error title, subcode, and message coming straight from Meta
+      console.error('📊 Meta Graph API Error Details:', JSON.stringify(error.response.data, null, 2));
+    } else {
+      console.error(error.message);
+    }
   }
 }
 
