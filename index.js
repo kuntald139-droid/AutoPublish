@@ -105,11 +105,10 @@ const buffer = await image.getBuffer('image/png'); // Simple, clean string MIME 
 
     console.log('🔗 Processed Image URL created:', permanentImageUrl);
 
-    // --- STEP 4: Publish to Instagram Business ---
+   // --- STEP 4: Publish to Instagram Business ---
     console.log('📸 Creating Instagram media container...');
     const containerUrl = `https://graph.facebook.com/v20.0/${INSTAGRAM_BUSINESS_ACCOUNT_ID}/media`;
     
-    // Ensure the caption string handles hashtags and quotes neatly
     const finalCaption = `${caption}\n\n#motivation #dailyquote #mindset #automation`;
 
     const containerResponse = await axios.post(containerUrl, {
@@ -119,8 +118,13 @@ const buffer = await image.getBuffer('image/png'); // Simple, clean string MIME 
     });
     
     const creationId = containerResponse.data.id;
-    console.log(`📦 Container created (ID: ${creationId}). Publishing now...`);
+    console.log(`📦 Container created (ID: ${creationId}).`);
+    
+    // --- NEW: Add a 30-second delay loop to let Meta finish processing the image ---
+    console.log('⏳ Waiting 30 seconds for Meta to process and download the image...');
+    await new Promise(resolve => setTimeout(resolve, 30000)); 
 
+    console.log('🚀 Publishing media now...');
     await axios.post(`https://graph.facebook.com/v20.0/${INSTAGRAM_BUSINESS_ACCOUNT_ID}/media_publish`, {
       creation_id: creationId,
       access_token: FACEBOOK_ACCESS_TOKEN
