@@ -84,26 +84,21 @@ async function generateAndPostToInstagram() {
 console.log('🔄 Converting processed image to buffer...');
 const buffer = await image.getBuffer('image/png'); // Simple, clean string MIME type
 
-    // --- STEP 3: Upload the PROCESSED Image to Cloudinary ---
+// --- STEP 3: Upload the PROCESSED Image to Cloudinary ---
     console.log('☁️ Uploading modified image to Cloudinary...');
     
-    // Cloudinary can accept raw buffers directly as the file input
-    const uploadResult = await cloudinary.uploader.upload_stream(
-      {
-        folder: 'instagram_automation',
-        resource_type: 'image',
-      },
-      (error, result) => {
-        if (error) throw error;
-        return result;
-      }
-    ).end(buffer); // We finalize the stream write here by pushing the buffer.
-
-    // Cloudinary upload stream returns synchronously if passed correctly, but let's handle it as a promise for robustness:
+    // Clean, single-stream execution wrapper
     const permanentImageUrl = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'instagram_automation', resource_type: 'image' },
-        (error, result) => { if (error) reject(error); resolve(result.secure_url); }
+        { 
+          folder: 'instagram_automation', 
+          resource_type: 'image',
+          format: 'jpg' // Forces Cloudinary to deliver a strict JPEG, which Meta prefers
+        },
+        (error, result) => { 
+          if (error) return reject(error); 
+          resolve(result.secure_url); 
+        }
       );
       uploadStream.end(buffer);
     });
@@ -114,10 +109,12 @@ const buffer = await image.getBuffer('image/png'); // Simple, clean string MIME 
     console.log('📸 Creating Instagram media container...');
     const containerUrl = `https://graph.facebook.com/v20.0/${INSTAGRAM_BUSINESS_ACCOUNT_ID}/media`;
     
+    // Ensure the caption string handles hashtags and quotes neatly
+    const finalCaption = `${caption}\n\n#motivation #dailyquote #mindset #automation`;
+
     const containerResponse = await axios.post(containerUrl, {
-      image_url: permanentImageUrl, // Instagram gets its modified image here
-      // Now the quote is both ON the image and in the caption description
-      caption: `${caption}\n\n#motivation #dailyquote #mindset #automation`, 
+      image_url: permanentImageUrl, 
+      caption: finalCaption, 
       access_token: FACEBOOK_ACCESS_TOKEN
     });
     
